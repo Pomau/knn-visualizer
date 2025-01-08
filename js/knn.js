@@ -46,53 +46,33 @@ class KNN {
         }
     }
 
-    kernelFunction(distance) {
-        const h = this.window === 'adaptive' ? 
-            (this.currentKDistance || this.kernelScale) : 
-            this.kernelScale;
-        
-        const scaledDistance = distance / h;
+	kernelFunction(r) {
+		switch (this.kernel) {
+			case 'uniform':
+				return r <= 1 ? 1 : 0
+			case 'gaussian':
+				return Math.exp(-(Math.pow(r, 2) / 2))
+			case 'epanechnikov':
+				return r <= 1 ? 0.75 * (1 - Math.pow(r, 2)) : 0
+			default:
+				return 1
+		}
+	}
 
-        if (this.window === 'fixed' || this.window === 'adaptive') {
-            switch(this.kernel) {
-                case 'uniform':
-                    return scaledDistance <= 1 ? 1 : 0;
-                case 'gaussian':
-                    return Math.exp(-(Math.pow(scaledDistance, 2) / 2));
-                case 'epanechnikov':
-                    return scaledDistance <= 1 ? 0.75 * (1 - Math.pow(scaledDistance, 2)) : 0;
-                default:
-                    return 1;
-            }
-        } else if (this.window === 'variable') {
-            const density = this.calculateLocalDensity(distance);
-            const adjustedScale = this.kernelScale / Math.sqrt(density);
-            const adjustedDistance = distance / adjustedScale;
-            
-            switch(this.kernel) {
-                case 'uniform':
-                    return adjustedDistance <= 1 ? 1 : 0;
-                case 'gaussian':
-                    return Math.exp(-(Math.pow(adjustedDistance, 2) / 2));
-                case 'epanechnikov':
-                    return adjustedDistance <= 1 ? 0.75 * (1 - Math.pow(adjustedDistance, 2)) : 0;
-                default:
-                    return 1;
-            }
-        }
-    }
+	calculateLocalDensity(distance) {
+		const pilotBandwidth = this.kernelScale
+		let density = 0
 
-    calculateLocalDensity(distance) {
-        const pilotBandwidth = this.kernelScale;
-        let density = 0;
-        
-        this.points.forEach(p => {
-            const d = this.calculateDistance({ x: p.x, y: p.y }, { x: this.currentPoint.x, y: this.currentPoint.y });
-            density += Math.exp(-(Math.pow(d / pilotBandwidth, 2) / 2));
-        });
-        
-        return density / this.points.length;
-    }
+		this.points.forEach(p => {
+			const d = this.calculateDistance(
+				{ x: p.x, y: p.y },
+				{ x: this.currentPoint.x, y: this.currentPoint.y }
+			)
+			density += Math.exp(-(Math.pow(d / pilotBandwidth, 2) / 2))
+		})
+
+		return density / this.points.length
+	}
 
     addPoint(x, y, className) {
         this.points.push({ x, y, className });
@@ -107,47 +87,70 @@ class KNN {
             };
         }
 
-        this.currentPoint = { x, y };
-        const point = { x, y };
-        const distances = this.points.map(p => ({
-            point: p,
-            distance: this.calculateDistance(point, p),
-            className: p.className
-        }));
+		this.currentPoint = { x, y }
+		const point = { x, y }
+		const distances = this.points.map(p => ({
+			point: p,
+			distance: this.calculateDistance(point, p),
+			className: p.className,
+		}))
 
-        distances.sort((a, b) => a.distance - b.distance);
-        const k = Math.min(this.k, distances.length);
-        const neighbors = distances.slice(0, k);
+		distances.sort((a, b) => a.distance - b.distance)
+		const k = Math.min(this.k, distances.length)
+		const neighbors = distances.slice(0, k)
 
-        if (this.window === 'adaptive') {
-            this.currentKDistance = neighbors[neighbors.length - 1].distance;
-        }
+		const classProbs = {}
+		let totalWeight = 0
 
-        const classProbs = {};
-        let totalWeight = 0;
+		if (this.window === 'fixed') {
+			neighbors.forEach(neighbor => {
+				const kernelValue = this.kernelFunction(
+					neighbor.distance / this.kernelScale
+				)
+				totalWeight += kernelValue
 
-        neighbors.forEach(neighbor => {
-            const weight = this.kernelFunction(neighbor.distance);
-            totalWeight += weight;
-            
-            if (!classProbs[neighbor.className]) {
-                classProbs[neighbor.className] = 0;
-            }
-            classProbs[neighbor.className] += weight;
-        });
+				if (!classProbs[neighbor.className]) {
+					classProbs[neighbor.className] = 0
+				}
+				classProbs[neighbor.className] += kernelValue
+			})
+		} else {
+			const kPlusOneDistance = distances[k]
+				? distances[k].distance
+				: distances[k - 1].distance
 
-        Object.keys(classProbs).forEach(className => {
-            classProbs[className] /= totalWeight;
-        });
+			neighbors.forEach(neighbor => {
+				const kernelValue = this.kernelFunction(
+					neighbor.distance / kPlusOneDistance
+				)
+				totalWeight += kernelValue
 
-        return {
-            probabilities: classProbs,
-            distances: neighbors,
-            kernelValues: neighbors.map(n => ({
-                value: this.kernelFunction(n.distance),
-                className: n.point.className,
-                point: n.point
-            }))
-        };
-    }
-} 
+				if (!classProbs[neighbor.className]) {
+					classProbs[neighbor.className] = 0
+				}
+				classProbs[neighbor.className] += kernelValue
+			})
+		}
+
+		Object.keys(classProbs).forEach(className => {
+			classProbs[className] /= totalWeight
+		})
+
+		return {
+			probabilities: classProbs,
+			distances: neighbors,
+			kernelValues: neighbors.map(n => ({
+				value: this.kernelFunction(
+					this.window === 'fixed'
+						? n.distance / this.kernelScale
+						: n.distance /
+								(distances[k]
+									? distances[k].distance
+									: distances[k - 1].distance)
+				),
+				className: n.point.className,
+				point: n.point,
+			})),
+		}
+	}
+}
