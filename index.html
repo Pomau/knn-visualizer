@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<title>k-NN Визуализатор</title>
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="css/fonts.css" />
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>Визуализатор метода k-NN</h1>
+				<p class="description">
+					Интерактивная визуализация метода k-ближайших соседей
+				</p>
+			</header>
+
+			<div class="main-content">
+				<div class="control-panel">
+					<div class="parameters card">
+						<div class="card-header">
+							<span class="material-icons">tune</span>
+							<h2>Параметры</h2>
+						</div>
+						<div class="parameter-group">
+							<label>
+								<span class="param-title">
+									<span class="material-icons">group</span>
+									Количество соседей (k):
+								</span>
+								<input
+									type="number"
+									id="k-value"
+									min="1"
+									value="3"
+									class="param-input"
+								/>
+							</label>
+						</div>
+
+						<div class="parameter-group">
+							<label>
+								<span class="param-title">
+									<span class="material-icons">blur_on</span>
+									Ядро:
+								</span>
+								<select id="kernel" class="param-select">
+									<option value="uniform">Равномерное</option>
+									<option value="gaussian">Гауссово</option>
+									<option value="epanechnikov">Епанечниково</option>
+								</select>
+							</label>
+							<label>
+								<span class="param-title">
+									<span class="material-icons">scale</span>
+									Масштаб ядра:
+								</span>
+								<input
+									type="number"
+									id="kernel-scale"
+									min="0.1"
+									max="10"
+									step="0.1"
+									value="1"
+									class="param-input"
+								/>
+							</label>
+						</div>
+
+						<div class="parameter-group">
+							<label>
+								<span class="param-title">
+									<span class="material-icons">straighten</span>
+									Метрика расстояния:
+								</span>
+								<select id="distance" class="param-select">
+									<option value="euclidean">Евклидова</option>
+									<option value="manhattan">Манхэттенская</option>
+									<option value="chebyshev">Чебышева</option>
+								</select>
+							</label>
+						</div>
+
+						<div class="parameter-group">
+							<label>
+								<span class="param-title">
+									<span class="material-icons">window</span>
+									Тип окна:
+								</span>
+								<select id="window" class="param-select">
+									<option value="fixed">Фиксированное</option>
+									<option value="adaptive">Адаптивное</option>
+									<option value="variable">Переменное</option>
+								</select>
+							</label>
+						</div>
+					</div>
+
+					<div class="tools card">
+						<div class="card-header">
+							<span class="material-icons">build</span>
+							<h2>Инструменты</h2>
+						</div>
+						<div class="tool-group">
+							<label>
+								<span class="param-title">
+									<span class="material-icons">dataset</span>
+									Предопределенные наборы:
+								</span>
+								<select id="dataset-select" class="param-select">
+									<option value="">Выберите набор данных...</option>
+									<option value="circles">Концентрические круги</option>
+									<option value="spiral">Спираль</option>
+									<option value="moons">Полумесяцы</option>
+									<option value="blobs">Случайные кластеры</option>
+								</select>
+							</label>
+							<button id="load-dataset" class="btn btn-secondary">
+								<span class="material-icons">cloud_download</span>
+								Загрузить набор
+							</button>
+						</div>
+
+						<div class="tool-group">
+							<select id="class-select" class="class-select">
+								<option value="1">Класс 1</option>
+								<option value="2">Класс 2</option>
+								<option value="3">Класс 3</option>
+							</select>
+							<button id="add-point" class="btn btn-primary">
+								<span class="material-icons">add_circle</span>
+								Добавить точку
+							</button>
+							<button id="clear" class="btn btn-secondary">
+								<span class="material-icons">clear_all</span>
+								Очистить
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="visualization-area card">
+					<div class="canvas-hint">
+						<span>
+							<span class="material-icons">mouse</span>
+							Нажмите ЛКМ для добавления точки
+						</span>
+						<span>
+							<span class="material-icons">delete</span>
+							ПКМ для удаления точки
+						</span>
+					</div>
+					<canvas id="plot"></canvas>
+					<div class="info-panel">
+						<div class="info-header">
+							<span class="material-icons">info</span>
+							<h2>Информация о точке</h2>
+						</div>
+						<div class="info-content">
+							<div id="distances" class="info-section">
+								<div class="info-section-header">
+									<span class="material-icons">straighten</span>
+									<h3>Расстояния</h3>
+								</div>
+								<div class="info-data"></div>
+							</div>
+							<div id="kernel-values" class="info-section">
+								<div class="info-section-header">
+									<span class="material-icons">grain</span>
+									<h3>Значения ядра</h3>
+								</div>
+								<div class="info-data"></div>
+							</div>
+							<div id="probabilities" class="info-section">
+								<div class="info-section-header">
+									<span class="material-icons">pie_chart</span>
+									<h3>Вероятности классов</h3>
+								</div>
+								<div class="info-data"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="js/utils.js"></script>
+		<script src="js/datasets.js"></script>
+		<script src="js/knn.js"></script>
+		<script src="js/canvas.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

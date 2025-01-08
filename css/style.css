@@ -1,0 +1,463 @@
+:root {
+    --primary-color: #2196F3;
+    --secondary-color: #607D8B;
+    --background-color: #f5f5f5;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --border-radius: 8px;
+    --shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.description {
+    color: var(--secondary-color);
+    font-weight: 300;
+}
+
+.card {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1rem;
+}
+
+.main-content {
+    flex: 1;
+    display: grid;
+    grid-template-areas: 
+        "controls viz"
+        "info viz";
+    grid-template-columns: minmax(300px, 1fr) 2fr;
+    gap: 1.5rem;
+    height: calc(100vh - 120px);
+}
+
+.control-panel {
+    grid-area: controls;
+}
+
+.visualization-area {
+    grid-area: viz;
+    height: 100%;
+    position: relative;
+}
+
+.canvas-hint {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.canvas-hint:hover {
+    opacity: 1;
+}
+
+.info-panel {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 300px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.info-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--primary-color);
+    color: white;
+}
+
+.info-header h2 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.info-content {
+    padding: 0.5rem;
+}
+
+.info-section {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 6px;
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    transition: transform 0.2s ease;
+}
+
+.info-section:last-child {
+    margin-bottom: 0;
+}
+
+.info-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.info-section-header .material-icons {
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+}
+
+.info-section h3 {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin: 0;
+    font-weight: 500;
+}
+
+.info-data {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Анимация появления панели */
+.info-panel:empty {
+    opacity: 0;
+    transform: translateX(10px);
+}
+
+.parameter-group, .tool-group {
+    margin-bottom: 1.2rem;
+}
+
+.param-title {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.param-input, .param-select, .class-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #1976D2;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #546E7A;
+}
+
+.dataset-preview {
+    width: 100%;
+    height: 150px;
+    margin-top: 1rem;
+    border: 1px solid var(--secondary-color);
+    border-radius: var(--border-radius);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.dataset-preview:hover {
+    opacity: 1;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--border-radius);
+    background-color: white;
+}
+
+/* Адаптивный дизайн */
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-areas:
+            "controls"
+            "viz";
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .visualization-area {
+        height: 70vh;
+    }
+
+    .info-panel {
+        width: 250px;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .info-panel {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        top: auto;
+        width: calc(100% - 2rem);
+        max-width: 300px;
+        transform: translateY(10px);
+    }
+
+    .info-panel:empty {
+        transform: translateY(10px);
+    }
+
+    .visualization-area {
+        height: 60vh;
+    }
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding: 0.3rem 0;
+    overflow: hidden;
+}
+
+.info-label {
+    flex: 1;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.class-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.info-value {
+    font-weight: 500;
+    min-width: 70px;
+    text-align: right;
+    transition: color 0.3s ease;
+}
+
+.probability-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    border-radius: 1.5px;
+    opacity: 0.3;
+    transition: width 0.3s ease;
+}
+
+/* Hover эффект для строк */
+.info-row:hover {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 4px;
+}
+
+.info-row:hover .probability-bar {
+    opacity: 0.5;
+}
+
+/* Стили для разделов информации */
+.info-section:hover {
+    transform: translateX(-2px);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.card-header .material-icons {
+    color: var(--secondary-color);
+}
+
+.card-header h2 {
+    margin: 0;
+}
+
+.param-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.param-title .material-icons {
+    font-size: 1.2rem;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.btn .material-icons {
+    font-size: 1.2rem;
+}
+
+/* Стили для select с иконкой */
+.class-select {
+    padding-left: 2.5rem;
+    background-image: url('../assets/icons/class-icon.svg');
+    background-repeat: no-repeat;
+    background-position: 0.5rem center;
+    background-size: 1.2rem;
+}
+
+/* Стили для canvas-hint */
+.canvas-hint {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.canvas-hint span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.canvas-hint .material-icons {
+    font-size: 1rem;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 600px) {
+    .btn {
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn .material-icons {
+        font-size: 1.1rem;
+    }
+    
+    .param-title .material-icons {
+        font-size: 1.1rem;
+    }
+} 
+
+/* Стили для полосок значений ядра */
+.kernel-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    border-radius: 1.5px;
+    opacity: 0.3;
+    transition: width 0.3s ease;
+}
+
+.info-row:hover .kernel-bar {
+    opacity: 0.5;
+}
+
+/* Обновляем стили для info-row чтобы все полоски выглядели одинаково */
+.info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding: 0.3rem 0;
+    overflow: hidden;
+} 
