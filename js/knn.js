@@ -1,55 +1,53 @@
 class KNN {
-    constructor() {
-        this.points = [];
-        this.k = 3;
-        this.kernel = 'uniform';
-        this.distance = 'euclidean';
-        this.kernelScale = 1;
-        this.window = 'fixed';
-    }
+	constructor() {
+		this.points = []
+		this.k = 3
+		this.kernel = 'uniform'
+		this.distance = 'euclidean'
+		this.kernelScale = 0.1
+		this.window = 'fixed'
+	}
 
-    setK(k) {
-        this.k = k;
-    }
+	setK(k) {
+		this.k = k
+	}
 
-    setKernel(kernel) {
-        this.kernel = kernel;
-    }
+	setKernel(kernel) {
+		this.kernel = kernel
+	}
 
-    setDistance(distance) {
-        this.distance = distance;
-    }
+	setDistance(distance) {
+		this.distance = distance
+	}
 
-    setKernelScale(scale) {
-        this.kernelScale = scale;
-    }
+	setKernelScale(scale) {
+		this.kernelScale = scale
+	}
 
-    setWindow(window) {
-        this.window = window;
-    }
+	setWindow(window) {
+		this.window = window
+	}
 
-    calculateDistance(point1, point2) {
-        switch(this.distance) {
-            case 'euclidean':
-                return Math.sqrt(
-                    Math.pow(point1.x - point2.x, 2) + 
-                    Math.pow(point1.y - point2.y, 2)
-                );
-            case 'manhattan':
-                return Math.abs(point1.x - point2.x) + 
-                       Math.abs(point1.y - point2.y);
-            case 'chebyshev':
-                return Math.max(
-                    Math.abs(point1.x - point2.x),
-                    Math.abs(point1.y - point2.y)
-                );
-        }
-    }
+	calculateDistance(point1, point2) {
+		switch (this.distance) {
+			case 'euclidean':
+				return Math.sqrt(
+					Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
+				)
+			case 'manhattan':
+				return Math.abs(point1.x - point2.x) + Math.abs(point1.y - point2.y)
+			case 'chebyshev':
+				return Math.max(
+					Math.abs(point1.x - point2.x),
+					Math.abs(point1.y - point2.y)
+				)
+		}
+	}
 
 	kernelFunction(r) {
 		switch (this.kernel) {
 			case 'uniform':
-				return r <= 1 ? 1 : 0
+				return r < 1 ? 1 : 0
 			case 'gaussian':
 				return Math.exp(-(Math.pow(r, 2) / 2))
 			case 'epanechnikov':
@@ -74,18 +72,18 @@ class KNN {
 		return density / this.points.length
 	}
 
-    addPoint(x, y, className) {
-        this.points.push({ x, y, className });
-    }
+	addPoint(x, y, className) {
+		this.points.push({ x, y, className })
+	}
 
-    predict(x, y) {
-        if (this.points.length === 0) {
-            return {
-                probabilities: {},
-                distances: [],
-                kernelValues: []
-            };
-        }
+	predict(x, y) {
+		if (this.points.length === 0) {
+			return {
+				probabilities: {},
+				distances: [],
+				kernelValues: [],
+			}
+		}
 
 		this.currentPoint = { x, y }
 		const point = { x, y }
@@ -96,8 +94,14 @@ class KNN {
 		}))
 
 		distances.sort((a, b) => a.distance - b.distance)
-		const k = Math.min(this.k, distances.length)
-		const neighbors = distances.slice(0, k)
+
+		let neighbors
+		if (this.window === 'fixed') {
+			neighbors = distances.filter(d => d.distance <= this.kernelScale)
+		} else {
+			const kDistance = distances[this.k - 1].distance
+			neighbors = distances.filter(d => d.distance <= kDistance)
+		}
 
 		const classProbs = {}
 		let totalWeight = 0
@@ -115,14 +119,10 @@ class KNN {
 				classProbs[neighbor.className] += kernelValue
 			})
 		} else {
-			const kPlusOneDistance = distances[k]
-				? distances[k].distance
-				: distances[k - 1].distance
+			const kDistance = distances[this.k - 1].distance
 
 			neighbors.forEach(neighbor => {
-				const kernelValue = this.kernelFunction(
-					neighbor.distance / kPlusOneDistance
-				)
+				const kernelValue = this.kernelFunction(neighbor.distance / kDistance)
 				totalWeight += kernelValue
 
 				if (!classProbs[neighbor.className]) {
@@ -143,10 +143,7 @@ class KNN {
 				value: this.kernelFunction(
 					this.window === 'fixed'
 						? n.distance / this.kernelScale
-						: n.distance /
-								(distances[k]
-									? distances[k].distance
-									: distances[k - 1].distance)
+						: n.distance / distances[this.k - 1].distance
 				),
 				className: n.point.className,
 				point: n.point,

@@ -53,7 +53,7 @@
 							<label>
 								<span class="param-title">
 									<span class="material-icons">scale</span>
-									Масштаб ядра:
+									Ширина окна:
 								</span>
 								<input
 									type="number"
@@ -61,7 +61,7 @@
 									min="0.1"
 									max="10"
 									step="0.1"
-									value="1"
+									value="0.1"
 									class="param-input"
 								/>
 							</label>
@@ -109,16 +109,15 @@
 									Предопределенные наборы:
 								</span>
 								<select id="dataset-select" class="param-select">
-									<option value="">Выберите набор данных...</option>
+									<option value="spiral" selected>Спираль</option>
 									<option value="circles">Концентрические круги</option>
-									<option value="spiral">Спираль</option>
 									<option value="moons">Полумесяцы</option>
 									<option value="blobs">Случайные кластеры</option>
 								</select>
 							</label>
 							<button id="load-dataset" class="btn btn-secondary">
 								<span class="material-icons">cloud_download</span>
-								Загрузить набор
+								Выбрать
 							</button>
 						</div>
 

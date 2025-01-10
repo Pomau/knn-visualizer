@@ -30,6 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	distanceSelect = document.getElementById('distance')
 	windowSelect = document.getElementById('window')
 
+	// Загружаем первый набор данных по умолчанию
+	const points = DatasetGenerator.generateSpiral()
+	points.forEach(point => {
+		knn.addPoint(point.x, point.y, point.className)
+	})
+	canvasManager.backgroundNeedsUpdate = true
+	canvasManager.redraw(knn)
+
 	// Обработчик загрузки предопределенных наборов
 	loadDatasetBtn.addEventListener('click', () => {
 		const selectedDataset = datasetSelect.value
@@ -136,7 +144,7 @@ function updatePointInfo(x, y) {
 
 	// Обновляем расстояния
 	const distancesDiv = document.querySelector('#distances .info-data')
-	distancesDiv.innerHTML = prediction.distances
+	let distancesHtml = prediction.distances
 		.map(
 			d => `
 			<div class="info-row">
@@ -153,6 +161,22 @@ function updatePointInfo(x, y) {
 		`
 		)
 		.join('')
+
+	// Добавляем информацию о ширине окна
+	if (prediction.distances.length > 0) {
+		const windowWidth =
+			knn.window === 'fixed'
+				? knn.kernelScale
+				: prediction.distances[prediction.distances.length - 1].distance
+		distancesHtml += `
+			<div class="info-row" style="margin-top: 10px;">
+				<span class="info-label">Ширина окна:</span>
+				<span class="info-value">${windowWidth.toFixed(4)}</span>
+			</div>
+		`
+	}
+
+	distancesDiv.innerHTML = distancesHtml
 
 	// Обновляем значения ядра
 	const kernelDiv = document.querySelector('#kernel-values .info-data')

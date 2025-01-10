@@ -111,41 +111,44 @@ h1 {
 	position: absolute;
 	top: 1rem;
 	right: 1rem;
-	width: 300px;
+	width: 200px;
+	max-height: calc(100% - 2rem);
+	overflow-y: auto;
 	background: rgba(255, 255, 255, 0.98);
 	backdrop-filter: blur(10px);
 	z-index: 10;
 	border-radius: var(--border-radius);
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	overflow: hidden;
 	transition: opacity 0.3s ease, transform 0.3s ease;
+	font-size: 0.8rem;
 }
 
 .info-header {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	padding: 1rem;
+	gap: 0.3rem;
+	padding: 0.4rem;
 	background: var(--primary-color);
 	color: white;
+	position: sticky;
+	top: 0;
 }
 
 .info-header h2 {
-	font-size: 1.1rem;
+	font-size: 0.9rem;
 	font-weight: 500;
 	margin: 0;
 }
 
 .info-content {
-	padding: 0.5rem;
+	padding: 0.4rem;
 }
 
 .info-section {
 	background: rgba(0, 0, 0, 0.02);
-	border-radius: 6px;
-	padding: 0.8rem;
-	margin-bottom: 0.5rem;
-	transition: transform 0.2s ease;
+	border-radius: 4px;
+	padding: 0.4rem;
+	margin-bottom: 0.4rem;
 }
 
 .info-section:last-child {
@@ -155,26 +158,26 @@ h1 {
 .info-section-header {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	margin-bottom: 0.5rem;
+	gap: 0.3rem;
+	margin-bottom: 0.2rem;
 }
 
 .info-section-header .material-icons {
-	font-size: 1.2rem;
+	font-size: 1rem;
 	color: var(--secondary-color);
 }
 
 .info-section h3 {
-	font-size: 0.9rem;
+	font-size: 0.8rem;
 	color: var(--secondary-color);
 	margin: 0;
 	font-weight: 500;
 }
 
 .info-data {
-	font-size: 0.85rem;
+	font-size: 0.75rem;
 	color: var(--text-color);
-	line-height: 1.6;
+	line-height: 1.3;
 }
 
 /* Анимация появления панели */
@@ -288,10 +291,10 @@ canvas {
 .info-row {
 	display: flex;
 	align-items: center;
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.15rem;
+	padding: 0.15rem;
+	border-radius: 3px;
 	position: relative;
-	padding: 0.3rem 0;
-	overflow: hidden;
 }
 
 .info-label {
@@ -303,27 +306,28 @@ canvas {
 }
 
 .class-dot {
-	width: 8px;
-	height: 8px;
+	width: 6px;
+	height: 6px;
 	border-radius: 50%;
 	display: inline-block;
+	margin-right: 0.2rem;
 }
 
 .info-value {
+	margin-left: auto;
 	font-weight: 500;
-	min-width: 70px;
-	text-align: right;
-	transition: color 0.3s ease;
+	font-size: 0.75rem;
 }
 
 .probability-bar {
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	height: 3px;
+	height: 4px;
 	border-radius: 1.5px;
 	opacity: 0.3;
 	transition: width 0.3s ease;
+	margin-top: 0.2rem;
 }
 
 /* Hover эффект для строк */
@@ -435,10 +439,11 @@ canvas {
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	height: 3px;
+	height: 4px;
 	border-radius: 1.5px;
 	opacity: 0.3;
 	transition: width 0.3s ease;
+	margin-top: 0.2rem;
 }
 
 .info-row:hover .kernel-bar {
@@ -449,10 +454,9 @@ canvas {
 .info-row {
 	display: flex;
 	align-items: center;
-	margin-bottom: 0.5rem;
-	position: relative;
-	padding: 0.3rem 0;
-	overflow: hidden;
+	margin-bottom: 0.2rem;
+	padding: 0.2rem;
+	border-radius: 4px;
 }
 
 .parameters.card {
